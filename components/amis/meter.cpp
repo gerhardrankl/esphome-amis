@@ -1,4 +1,5 @@
 #include <AsyncTCP.h>
+#include <WiFi.h>
 #include "esphome/core/log.h"
 
 /*
