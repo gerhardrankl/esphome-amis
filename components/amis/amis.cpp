@@ -12,7 +12,7 @@ extern uint32_t energy_a_negative;
 extern uint32_t instantaneous_power_a_positive;
 extern uint32_t instantaneous_power_a_negative;
 
-extern void meter_init();
+//extern void meter_init();
 
 static const char *TAG = "amis";
 
