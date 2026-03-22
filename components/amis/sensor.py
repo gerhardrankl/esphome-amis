@@ -6,8 +6,6 @@ from esphome.const import (
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_TIMESTAMP,
-    DEVICE_CLASS_VOLTAGE,
-    DEVICE_CLASS_CURRENT,
     ICON_EMPTY,
     STATE_CLASS_MEASUREMENT,
     STATE_CLASS_TOTAL_INCREASING,
@@ -16,8 +14,6 @@ from esphome.const import (
     UNIT_SECOND,
     UNIT_VOLT_AMPS_REACTIVE_HOURS,
     UNIT_VOLT_AMPS_REACTIVE,
-    UNIT_VOLT,
-    UNIT_AMPERE 
 )
 
 DEPENDENCIES = ["uart"]
@@ -35,12 +31,6 @@ CONF_INSTANTANEOUS_POWER_A_NEGATIVE = 'instantaneous_power_a_negative'
 CONF_REACTIVE_INSTANTANEOUS_POWER_A_POSITIVE = 'reactive_instantaneous_power_a_positive'
 CONF_REACTIVE_INSTANTANEOUS_POWER_A_NEGATIVE = 'reactive_instantaneous_power_a_negative'
 CONF_TIMESTAMP = 'timestamp'
-CONF_VOLTAGE_L1 = 'voltage_l1'
-CONF_VOLTAGE_L2 = 'voltage_l2'
-CONF_VOLTAGE_L3 = 'voltage_l3'
-CONF_CURRENT_L1 = 'current_l1'
-CONF_CURRENT_L2 = 'current_l2'
-CONF_CURRENT_L3 = 'current_l3'
 
 CONFIG_SCHEMA = (
     cv.Schema(
@@ -95,42 +85,6 @@ CONFIG_SCHEMA = (
                 device_class=DEVICE_CLASS_POWER,
                 state_class=STATE_CLASS_MEASUREMENT
             ),
-            cv.Optional(CONF_VOLTAGE_L1): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_VOLTAGE_L2): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_VOLTAGE_L3): sensor.sensor_schema(
-                unit_of_measurement=UNIT_VOLT,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_VOLTAGE,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_CURRENT_L1): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_CURRENT,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_CURRENT_L2): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_CURRENT,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
-            cv.Optional(CONF_CURRENT_L3): sensor.sensor_schema(
-                unit_of_measurement=UNIT_AMPERE,
-                accuracy_decimals=0,
-                device_class=DEVICE_CLASS_CURRENT,
-                state_class=STATE_CLASS_MEASUREMENT
-            ),
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
@@ -155,12 +109,6 @@ def to_code(config):
         CONF_REACTIVE_INSTANTANEOUS_POWER_A_POSITIVE,
         CONF_REACTIVE_INSTANTANEOUS_POWER_A_NEGATIVE,
         CONF_TIMESTAMP,
-        CONF_VOLTAGE_L1,
-        CONF_VOLTAGE_L2,
-        CONF_VOLTAGE_L3,
-        CONF_CURRENT_L1,
-        CONF_CURRENT_L2,
-        CONF_CURRENT_L3,
     ]:
         if not key in config:
             continue

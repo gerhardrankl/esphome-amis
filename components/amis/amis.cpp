@@ -7,6 +7,13 @@
 namespace esphome {
 namespace amis {
 
+extern uint32_t energy_a_positive;
+extern uint32_t energy_a_negative;
+extern uint32_t instantaneous_power_a_positive;
+extern uint32_t instantaneous_power_a_negative;
+
+extern void meter_init();
+
 static const char *TAG = "amis";
 
 #define CHR2BIN(c) (c-(c>='A'?55:48))
@@ -16,6 +23,8 @@ static const char *TAG = "amis";
 void amis::AMISComponent::setup() {
   this->bytes = 0;
   this->expect = 0;
+
+  meter_init();
 }
 
 void amis::AMISComponent::hex2bin(const std::string s, uint8_t *buf) {
@@ -191,8 +200,10 @@ void amis::AMISComponent::amis_decode() {
             // 1.8.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
             ESP_LOGD(TAG, "1.8.0: %d", temp);
-            if(this->energy_a_positive_sensor)
+            if(this->energy_a_positive_sensor) {
               this->energy_a_positive_sensor->publish_state(temp);
+              energy_a_positive = temp;
+            }
           }
         break;
         case 0x83:
@@ -200,8 +211,10 @@ void amis::AMISComponent::amis_decode() {
             // 2.8.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
             ESP_LOGD(TAG, "2.8.0: %d", temp);
-            if(this->energy_a_negative_sensor)
+            if(this->energy_a_negative_sensor) {
               this->energy_a_negative_sensor->publish_state(temp);
+              energy_a_negative = temp;
+            }
           }
         break;
         case 0xfb:
@@ -239,56 +252,10 @@ void amis::AMISComponent::amis_decode() {
             // 1.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
             ESP_LOGD(TAG, "1.7.0: %d", temp);
-            if(this->instantaneous_power_a_positive_sensor)
+            if(this->instantaneous_power_a_positive_sensor) {
               this->instantaneous_power_a_positive_sensor->publish_state(temp);
-          }
-        break;
-
-        case 0x29: // Voltage
-          if (dife == 0x00 && vife == 0x00 && dif == 0x04) {
-            // 32.7.0 - Voltage L1
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "32.7.0 (U L1): %d", temp);
-            if (this->voltage_l1_sensor)
-              this->voltage_l1_sensor->publish_state(temp);
-          }
-          if (dife == 0x00 && vife == 0x01 && dif == 0x04) {
-            // 52.7.0 - Voltage L2
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "52.7.0 (U L2): %d", temp);
-            if (this->voltage_l2_sensor)
-              this->voltage_l2_sensor->publish_state(temp);
-          }
-          if (dife == 0x00 && vife == 0x02 && dif == 0x04) {
-            // 72.7.0 - Voltage L3
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "72.7.0 (U L3): %d", temp);
-            if (this->voltage_l3_sensor)
-              this->voltage_l3_sensor->publish_state(temp);
-          }
-        break;
-
-        case 0x39: // Current
-          if (dife == 0x00 && vife == 0x00 && dif == 0x04) {
-            // 31.7.0 - Current L1
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "31.7.0 (I L1): %d", temp);
-            if (this->current_l1_sensor)
-              this->current_l1_sensor->publish_state(temp);
-          }
-          if (dife == 0x00 && vife == 0x01 && dif == 0x04) {
-            // 51.7.0 - Current L2
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "51.7.0 (I L2): %d", temp);
-            if (this->current_l2_sensor)
-              this->current_l2_sensor->publish_state(temp);
-          }
-          if (dife == 0x00 && vife == 0x02 && dif == 0x04) {
-            // 71.7.0 - Current L3
-            memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "71.7.0 (I L3): %d", temp);
-            if (this->current_l3_sensor)
-              this->current_l3_sensor->publish_state(temp);
+              instantaneous_power_a_positive = temp;
+            }
           }
         break;
         case 0xab:
@@ -296,9 +263,14 @@ void amis::AMISComponent::amis_decode() {
             // 2.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
             ESP_LOGD(TAG, "2.7.0: %d", temp);
-            if(this->instantaneous_power_a_negative_sensor)
+            if(this->instantaneous_power_a_negative_sensor) {
               this->instantaneous_power_a_negative_sensor->publish_state(temp);
+              instantaneous_power_a_negative = temp;
+            }
           }
+        break;
+        default:
+          ESP_LOGD(TAG, "Got unkown vif %x", vif);
         break;
       }
       
@@ -330,6 +302,7 @@ void amis::AMISComponent::loop() {
     if((this->bytes + cnt) < sizeof(this->buffer)) {
 	  this->read_array(&this->buffer[bytes], cnt);
 	  bytes += cnt;
+  
 	  cnt = this->available();
     } else {
       ESP_LOGD(TAG, "rcv'd incomplete frame, clearing buffer");

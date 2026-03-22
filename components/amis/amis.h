@@ -44,24 +44,6 @@ class AMISComponent : public Component, public uart::UARTDevice {
   void set_timestamp_sensor(sensor::Sensor *sensor) {
     this->timestamp_sensor = sensor;
   }
-  void set_voltage_l1_sensor(sensor::Sensor *sensor) {
-    this->voltage_l1_sensor = sensor;
-  }
-  void set_voltage_l2_sensor(sensor::Sensor *sensor) {
-    this->voltage_l2_sensor = sensor;
-  }
-  void set_voltage_l3_sensor(sensor::Sensor *sensor) {
-    this->voltage_l3_sensor = sensor;
-  }
-  void set_current_l1_sensor(sensor::Sensor *sensor) {
-    this->current_l1_sensor = sensor;
-  }
-  void set_current_l2_sensor(sensor::Sensor *sensor) {
-    this->current_l2_sensor = sensor;
-  }
-  void set_current_l3_sensor(sensor::Sensor *sensor) {
-    this->current_l3_sensor = sensor;
-  }
 
   float get_setup_priority() const override { return setup_priority::DATA; }
 
@@ -81,13 +63,6 @@ class AMISComponent : public Component, public uart::UARTDevice {
   sensor::Sensor *reactive_instantaneous_power_a_positive_sensor{nullptr};
   sensor::Sensor *reactive_instantaneous_power_a_negative_sensor{nullptr};
   sensor::Sensor *timestamp_sensor{nullptr};
-  sensor::Sensor *voltage_l1_sensor{nullptr};
-  sensor::Sensor *voltage_l2_sensor{nullptr};
-  sensor::Sensor *voltage_l3_sensor{nullptr};
-  sensor::Sensor *current_l1_sensor{nullptr};
-  sensor::Sensor *current_l2_sensor{nullptr};
-  sensor::Sensor *current_l3_sensor{nullptr};
-
 };
 
 }  // namespace rdm6300
