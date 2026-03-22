@@ -236,6 +236,7 @@ namespace esphome
 
         void meter_init()
         {
+            ESP_LOGD(TAG, "meter_init()");
             meter_server = new AsyncServer(502); // start listening on tcp port 502
             meter_server->onClient(&handleNewClient, meter_server);
             meter_server->begin();

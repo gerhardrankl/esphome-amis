@@ -24,6 +24,7 @@ void amis::AMISComponent::setup() {
   this->bytes = 0;
   this->expect = 0;
 
+  ESP_LOGD(TAG, "setup()");
   meter_init();
 }
 
@@ -103,7 +104,7 @@ void amis::AMISComponent::amis_decode() {
     cs += this->buffer[i];
 
   if(cs == this->buffer[this->bytes-2]) {
-    ESP_LOGD(TAG, "checksum correct, decrypting");
+    //ESP_LOGD(TAG, "checksum correct, decrypting");
 
     this->iv[0] = this->buffer[11];
     this->iv[1] = this->buffer[12];
@@ -188,9 +189,9 @@ void amis::AMISComponent::amis_decode() {
             ESP_LOGD(TAG, "time invalid");
             goto out;
           } else {
-            ESP_LOGD(TAG, "time=%.2d-%.2d-%.2d %.2d:%.2d:%.2d",
-                 1900 + t.tm_year, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-            ESP_LOGD(TAG, "timestamp=%ld", mktime(&t));
+            //ESP_LOGD(TAG, "time=%.2d-%.2d-%.2d %.2d:%.2d:%.2d",
+              //   1900 + t.tm_year, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+            //ESP_LOGD(TAG, "timestamp=%ld", mktime(&t));
           }
           if(this->timestamp_sensor)
             this->timestamp_sensor->publish_state(mktime(&t));
@@ -199,7 +200,7 @@ void amis::AMISComponent::amis_decode() {
           if(dif == 0x04) {
             // 1.8.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "1.8.0: %d", temp);
+            //ESP_LOGD(TAG, "1.8.0: %d", temp);
             if(this->energy_a_positive_sensor) {
               this->energy_a_positive_sensor->publish_state(temp);
               energy_a_positive = temp;
@@ -210,7 +211,7 @@ void amis::AMISComponent::amis_decode() {
           if(dif == 0x04 && vife == 0x3c) {
             // 2.8.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "2.8.0: %d", temp);
+            //ESP_LOGD(TAG, "2.8.0: %d", temp);
             if(this->energy_a_negative_sensor) {
               this->energy_a_negative_sensor->publish_state(temp);
               energy_a_negative = temp;
@@ -221,28 +222,28 @@ void amis::AMISComponent::amis_decode() {
           if(dif == 0x84 && dife == 0x10 && vife == 0x73) {
             // 3.8.1
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "3.8.1: %d", temp);
+            //ESP_LOGD(TAG, "3.8.1: %d", temp);
             if(this->reactive_energy_a_positive_sensor)
               this->reactive_energy_a_positive_sensor->publish_state(temp);
           }
           if(dif == 0x84 && dife == 0x10 && vife == 0x3c) {
             // 4.8.1
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "4.8.1: %d", temp);
+            //ESP_LOGD(TAG, "4.8.1: %d", temp);
             if(this->reactive_energy_a_negative_sensor)
               this->reactive_energy_a_negative_sensor->publish_state(temp);
           }
           if(dif == 0x04 && dife == 0x00 && vife == 0x14) {
             // 3.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "3.7.0: %d", temp);
+            //ESP_LOGD(TAG, "3.7.0: %d", temp);
             if(this->reactive_instantaneous_power_a_positive_sensor)
               this->reactive_instantaneous_power_a_positive_sensor->publish_state(temp);
           }
           if(dif == 0x04 && dife == 0x00 && vife == 0x3c) {
             // 4.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "4.7.0: %d", temp);
+            //ESP_LOGD(TAG, "4.7.0: %d", temp);
             if(this->reactive_instantaneous_power_a_negative_sensor)
               this->reactive_instantaneous_power_a_negative_sensor->publish_state(temp);
           }
@@ -251,7 +252,7 @@ void amis::AMISComponent::amis_decode() {
           if(dif == 0x04) {
             // 1.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "1.7.0: %d", temp);
+            //ESP_LOGD(TAG, "1.7.0: %d", temp);
             if(this->instantaneous_power_a_positive_sensor) {
               this->instantaneous_power_a_positive_sensor->publish_state(temp);
               instantaneous_power_a_positive = temp;
@@ -262,7 +263,7 @@ void amis::AMISComponent::amis_decode() {
           if(dif == 0x04 && vife == 0x3c) {
             // 2.7.0
             memcpy(&temp, &this->decode_buffer[i], data_len);
-            ESP_LOGD(TAG, "2.7.0: %d", temp);
+            //ESP_LOGD(TAG, "2.7.0: %d", temp);
             if(this->instantaneous_power_a_negative_sensor) {
               this->instantaneous_power_a_negative_sensor->publish_state(temp);
               instantaneous_power_a_negative = temp;
@@ -298,7 +299,7 @@ void amis::AMISComponent::loop() {
   // Do we actually need a loop?
   uint8_t cnt = this->available();
   while (cnt > 0) {
-    ESP_LOGD(TAG, "bytes available, reading");
+    //ESP_LOGD(TAG, "bytes available, reading");
     if((this->bytes + cnt) < sizeof(this->buffer)) {
 	  this->read_array(&this->buffer[bytes], cnt);
 	  bytes += cnt;
@@ -327,7 +328,7 @@ void amis::AMISComponent::loop() {
     }
 
     if(this->expect && this->bytes >= this->expect) {
-      ESP_LOGD(TAG, "amis_decode");
+      //ESP_LOGD(TAG, "amis_decode");
       this->amis_decode();
     }
   }
