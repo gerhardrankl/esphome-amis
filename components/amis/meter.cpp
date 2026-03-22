@@ -1,5 +1,6 @@
-#include <AsyncTCP.h>
-#include <WiFi.h>
+//#include <AsyncTCP.h>
+//#include <ESPAsyncWebServer.h>
+#include <ESPAsyncTCP.h>
 #include "esphome/core/log.h"
 
 /*

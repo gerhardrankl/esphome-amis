@@ -25,7 +25,7 @@ void amis::AMISComponent::setup() {
   this->expect = 0;
 
   ESP_LOGD(TAG, "setup()");
-  meter_init();
+  //meter_init();
 }
 
 void amis::AMISComponent::hex2bin(const std::string s, uint8_t *buf) {
